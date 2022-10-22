@@ -1,15 +1,26 @@
 import { Injectable } from "@nestjs/common";
-import { Project } from "./project.model";
+import { EntityRepository } from "@mikro-orm/postgresql";
+import { InjectRepository } from "@mikro-orm/nestjs"
+
+import { ProjectEntity } from "./project.model";
+import { CreateProjectDto } from "./project.dto";
 
 @Injectable()
 export class ProjectService {
-    private readonly projects: Project[] = [];
+    constructor(
+        @InjectRepository(ProjectEntity)
+        private readonly projectRepository: EntityRepository<ProjectEntity>
+    ) {}
 
-    createProject(project: Project){
-        this.projects.push(project)
+    async createProject(dto: CreateProjectDto): Promise<ProjectEntity> {
+        const { name, description } = dto;
+        const project = new ProjectEntity(name, description);
+
+        await this.projectRepository.persistAndFlush(project);
+        return project;
     }
 
-    listProjects(): Project[] {
-        return this.projects;
+    async listProjects(): Promise<ProjectEntity[]> {
+        return this.projectRepository.findAll();
     }
-} 
+}
