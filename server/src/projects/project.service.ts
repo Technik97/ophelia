@@ -23,4 +23,8 @@ export class ProjectService {
     async listProjects(): Promise<ProjectEntity[]> {
         return this.projectRepository.findAll();
     }
+
+    async showProject(id: number): Promise<ProjectEntity> {
+        return this.projectRepository.findOne(id);
+    }
 }

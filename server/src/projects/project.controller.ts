@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Req, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Res } from "@nestjs/common";
 
 import { CreateProjectDto } from "./project.dto";
 import { ProjectService } from "./project.service";
@@ -19,14 +19,17 @@ export class ProjectController {
     }
 
     @Get('/')
-    list(@Req() res) {
-        const projects = this.projectService.listProjects();
+    @HttpCode(200)
+    async list(@Res() res) {
+        const projects = await this.projectService.listProjects();
 
         return res.status(HttpStatus.OK).json(projects)
     }
 
     @Get(':id')
-    show(@Param() params): string {
-        return `This action returns #${params.id} project`
+    async show(@Res() res, @Param() params) {
+        const project = await this.projectService.showProject(params.id);
+
+        return res.status(HttpStatus.OK).json(project);
     }
 }
