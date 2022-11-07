@@ -11,6 +11,7 @@ import { ProjectService } from "./project.service";
             entities: [ProjectEntity]
         })
     ],
+    exports: [ProjectService],
     controllers: [ProjectController],
     providers: [ProjectService]
 })
