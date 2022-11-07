@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { EntityRepository } from "@mikro-orm/postgresql";
 import { InjectRepository } from "@mikro-orm/nestjs"
 
 import { ProjectEntity } from "./project.model";
 import { CreateProjectDto } from "./project.dto";
+import { ProjectRepository } from "./project.repository";
 
 @Injectable()
 export class ProjectService {
     constructor(
         @InjectRepository(ProjectEntity)
-        private readonly projectRepository: EntityRepository<ProjectEntity>
+        private readonly projectRepository: ProjectRepository,
     ) {}
 
     async createProject(dto: CreateProjectDto): Promise<ProjectEntity> {
