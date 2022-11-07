@@ -1,18 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@mikro-orm/nestjs';
 
-import { ProjectService } from '../../src/projects/project.service';
-import { ProjectRepository } from '../../src/projects/project.repository';
-import { CreateProjectDto } from '../../src/projects/project.dto';
+import { ProjectService } from '../project.service';
+import { CreateProjectDto } from '../project.dto';
+import { ProjectEntity } from '../project.model';
+import { ProjectRepository } from '../project.repository';
 
 describe('ProjectService', () => {
     let service: ProjectService;
 
     const mockProjectRepository = {
-        listProject: jest.fn().mockImplementation(() => {
+        findAll: jest.fn().mockImplementation(() => {
             return Promise.resolve([]);
         }),
 
-        showProject: jest.fn().mockImplementation((options) => {
+        findOne: jest.fn().mockImplementation((options) => {
             return Promise.resolve({
                 id: 1 || options.id,
                 name: 'Project' || options.name,
@@ -31,8 +33,9 @@ describe('ProjectService', () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 ProjectService,
+                ProjectRepository,
                 {
-                    provide: ProjectRepository,
+                    provide: getRepositoryToken(ProjectEntity),
                     useValue: mockProjectRepository,
                 },
             ],
@@ -58,4 +61,4 @@ describe('ProjectService', () => {
             description: 'This is a project'
         });
     });
-});
+})
