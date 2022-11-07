@@ -1,7 +1,11 @@
-import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
+import { Entity, PrimaryKey, Property, EntityRepositoryType } from "@mikro-orm/core";
+
+import { ProjectRepository } from "./project.repository";
 
 @Entity({ tableName: 'projects' })
 export class ProjectEntity {
+    [EntityRepositoryType]?: ProjectRepository
+
     @PrimaryKey()
     id: number;
 
