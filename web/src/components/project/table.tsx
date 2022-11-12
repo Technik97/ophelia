@@ -1,18 +1,21 @@
-import React from "react"
+import React from "react";
 
-const ProjectTable = () => {
+import { IProject } from "../../interfaces/projects";
+
+interface ProjectTableProps {
+  project: IProject
+}
+
+const ProjectTable: React.FC<ProjectTableProps> = ({ project }) => {
     return(
         <>
             <div className="overflow-x-auto w-full">
               <table className="table w-full">
                 <thead>
                   <tr>
-                    <th>
-                      <p>Project</p>
-                    </th>
+                    <th></th>
                     <th>Name</th>
                     <th>Description</th>
-                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -25,13 +28,12 @@ const ProjectTable = () => {
                           </div>
                         </div>
                       <div>
-                      <div className="font-bold">Hart Hagerty</div>
-                      <div className="text-sm opacity-50">United States</div>
+                      <div className="font-bold">{ project.name }</div>
                     </div>
                     </div>
                   </td>
                 <td>
-                Zemlak, Daniel and Leannon
+                { project.description }
                 {/* <br/>
                 <span className="badge badge-ghost badge-sm">Desktop Support Technician</span> */}
               </td>
