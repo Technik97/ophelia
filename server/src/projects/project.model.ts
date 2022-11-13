@@ -9,7 +9,7 @@ export class ProjectEntity {
     @PrimaryKey()
     id: number;
 
-    @Property()
+    @Property({ unique: true, nullable: false})
     name: string;
 
     @Property({ nullable: true })
