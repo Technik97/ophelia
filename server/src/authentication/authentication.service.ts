@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
-import { compare, hash } from 'bcrypt';
+import { BadRequestException, Injectable, UnauthorizedException, HttpException, HttpStatus} from "@nestjs/common";
+import { compare} from 'bcrypt';
 
 import { UserEntity } from "src/users/user.model";
 import { LoginUserDto, RegisterUserDto, User } from "../users/user.dto";
@@ -11,11 +11,8 @@ export class AuthenticationService {
 
     async validateUser(user: LoginUserDto): Promise<User> {
         const foundUser = await this.userService.getByEmail(user.email);
-        // console.log("*",foundUser.password);
-        // console.log("@",user.password);
-
-        const res = await compare(user.password, foundUser.password)
-        console.log(res)
+        const res = await compare(user.password, foundUser.password);
+        
         if(!user || !res) {
             throw new UnauthorizedException('Incorrect username or password');
         }
@@ -25,20 +22,19 @@ export class AuthenticationService {
     }
 
     async registerUser(user: RegisterUserDto): Promise<UserEntity> {
-        // const existingUser = await this.userService.getByEmail(user.email);
-        // console.log(existingUser)
-        // if(existingUser) {
-        //     throw new BadRequestException('User email must be unique');
-        // }
-
         if (user.password !== user.confirmationPassword) {
             throw new BadRequestException('Password and Confirmation Password must match');
         }
 
         const { confirmationPassword: _,...newUser } = user;
 
-        const registeredUser = await this.userService.createUser(user);
-
-        return registeredUser;
+        try {
+            const registeredUser = await this.userService.createUser(user);
+            return registeredUser;
+        } catch(error) {
+            if(error?.code === PostgresErrorCode.UniqueViolation) {
+                throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST)
+            }
+        }
     }
 }
