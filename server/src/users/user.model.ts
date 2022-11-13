@@ -1,8 +1,12 @@
 import { Entity, PrimaryKey, Property, EntityRepositoryType } from "@mikro-orm/core";
 import { Expose, Exclude } from 'class-transformer';
 
+import { UserRepository } from "./user.repository";
+
 @Entity({ tableName: 'users' })
 export class UserEntity {
+    [EntityRepositoryType]?: UserRepository
+
     @PrimaryKey()
     id: number;
 
