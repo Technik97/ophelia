@@ -1,54 +1,44 @@
-import { HttpException, HttpStatus } from "@nestjs/common";
-import bcrypt from 'bcrypt';
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { compare, hash } from 'bcrypt';
 
-import { UserService } from "src/users/user.service";
+import { UserEntity } from "src/users/user.model";
+import { LoginUserDto, RegisterUserDto, User } from "../users/user.dto";
+ import { UserService } from "../users/user.service";
 
-
+@Injectable()
 export class AuthenticationService {
-    constructor(
-        private readonly userService: UserService
-    ){}
+    constructor(private userService: UserService) {}
 
-    public async register(registrationData: any ) {
-        const hashedPassword = await bcrypt.hash(registrationData.password, 10);
+    async validateUser(user: LoginUserDto): Promise<User> {
+        const foundUser = await this.userService.getByEmail(user.email);
+        // console.log("*",foundUser.password);
+        // console.log("@",user.password);
 
-        try {
-            const createdUser = await this.userService.createUser({
-                ...registrationData,
-                password: hashedPassword
-            });
-            // createdUser.password = undefined;
-            return createdUser;
-        } catch (err) {
-            if(err?.code === PostgresErrorCode.UniqueViolation){
-                throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
-            }
+        const res = await compare(user.password, foundUser.password)
+        console.log(res)
+        if(!user || !res) {
+            throw new UnauthorizedException('Incorrect username or password');
         }
-        throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+
+        const { password: _password, ...retUser } = foundUser;
+        return retUser;
     }
 
-    public async getAuthenticatedUser(email: string, hashedPassword: string) {
-        try {
-            const user = await this.userService.getByEmail(email);
-             await this.verifyPassword(
-                hashedPassword,
-                user.password
-            );
-        //   user.password = undefined;
-            return user;
-        } catch (error) {
-            throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
-        }
-    }
+    async registerUser(user: RegisterUserDto): Promise<UserEntity> {
+        // const existingUser = await this.userService.getByEmail(user.email);
+        // console.log(existingUser)
+        // if(existingUser) {
+        //     throw new BadRequestException('User email must be unique');
+        // }
 
-    private async verifyPassword(plainTextpassword: string, hashedPassword: string) {
-        const isPasswordMatching = await bcrypt.compare(
-            plainTextpassword, 
-            hashedPassword
-        );
-
-        if(!isPasswordMatching) {
-            throw new HttpException('Wrong Credentials provided', HttpStatus.BAD_REQUEST);
+        if (user.password !== user.confirmationPassword) {
+            throw new BadRequestException('Password and Confirmation Password must match');
         }
+
+        const { confirmationPassword: _,...newUser } = user;
+
+        const registeredUser = await this.userService.createUser(user);
+
+        return registeredUser;
     }
 }
