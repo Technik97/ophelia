@@ -3,7 +3,8 @@ import { compare} from 'bcrypt';
 
 import { UserEntity } from "src/users/user.model";
 import { LoginUserDto, RegisterUserDto, User } from "../users/user.dto";
- import { UserService } from "../users/user.service";
+import { UserService } from "../users/user.service";
+import { PostgresErrorCode } from '../storage/postgresErrorCodes.enum';
 
 @Injectable()
 export class AuthenticationService {
