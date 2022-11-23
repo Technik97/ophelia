@@ -7,7 +7,7 @@ interface FormProps {
     type: 'login' | 'register';
     onChange: any;
     onSubmit: any;
-    name: string;
+    name?: string;
     email: string;
     password: string;
     confirmationPassword?: string;
@@ -20,9 +20,12 @@ const AuthFormComponent: React.FC<FormProps> = ({
         <div className='flex items-center justify-center p-12'>
             <div className='mx-auto w-full ax-w-[550px]'>
                 <form onSubmit={onSubmit}>
-                    <FieldComponent prop='name'>
-                        <InputComponent type='text' prop="name" onChange={onChange} value={name} />
-                    </FieldComponent>
+                    {type === 'register' ?
+                        <FieldComponent prop='name'>
+                            <InputComponent type='text' prop="name" onChange={onChange} value={name} />
+                        </FieldComponent> :
+                        ''
+                    }
                     <FieldComponent prop='email'>
                         <InputComponent type='email' prop="email" onChange={onChange} value={email} />
                     </FieldComponent>
