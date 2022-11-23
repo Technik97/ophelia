@@ -1,6 +1,5 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import qs from 'qs';
 
 import AuthFormComponent from '../../components/common/auth_form_component';
 import { IAuthUser } from '../../interfaces/users';
@@ -18,9 +17,7 @@ const RegisterUser = () => {
         initialValues: initValue,
         onSubmit: values => {
             const body = values
-            console.log(body)
             registerUser(body)
-            console.log('after');
         }
     })
 
