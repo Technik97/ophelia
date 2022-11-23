@@ -6,6 +6,11 @@ export interface IAuthUser {
     confirmationPassword?: string;
 }
 
+export interface ILoginUser {
+    email: string;
+    password: string;
+}
+
 export interface IUser {
     id: number;
     email: string;
